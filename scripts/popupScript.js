@@ -1,33 +1,61 @@
 
 console.log('Script loaded')
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
 
+  const tab = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
   const switchId = 'switch'
   const demoSwitch = document.getElementById(switchId)
 
-  console.log('Init ' + JSON.stringify(chrome.storage.sync));
+  console.log('TAB ' + JSON.stringify(tab));
 
-  // Initialize switch based on stored value
-  chrome.storage.sync.get("demo").then((result) => {
+  await chrome.scripting.executeScript({
+    target: { tabId: tab[0].id },
+    func: async () => {
+      const currentStatus = localStorage.getItem('demo')
+      await chrome.storage.local.set({'demo': currentStatus})
+    },
+  });
+
+  chrome.storage.local.get("demo").then((result) => {
     console.log('Get ' + JSON.stringify(result));
     demoSwitch.checked = result.demo;
   });
 
   // Attach listener to the switch
   demoSwitch.addEventListener('change', function () {
-    let value = this.checked;
+    let newStatus = this.checked;
+    console.log('WRITE ' + newStatus);
 
-    // Save value to local storage
-    chrome.storage.sync.set({"demo": value}).then(() => {
-      console.log('Set ' + value);
-    });
-
+    if (newStatus) {
+      activateDemoMode(tab[0])
+      hideSudoWarning(tab[0])
+    }
+    else {
+      deactivateDemoMode(tab[0])
+      showSudoWarning(tab[0])
+    }
   });
 
-
-
 });
+
+async function activateDemoMode(tab) {
+  await chrome.scripting.executeScript({
+    target: { tabId: tab.id },
+    func: () => {
+      localStorage.setItem('demo', true);
+    },
+  });
+}
+
+async function deactivateDemoMode(tab) {
+  await chrome.scripting.executeScript({
+    target: { tabId: tab.id },
+    func: () => {
+      localStorage.setItem('demo', false);
+    },
+  });
+}
 
 // Hide the impersonated card on the sidebar.
 async function hideSudoWarning(tab) {
