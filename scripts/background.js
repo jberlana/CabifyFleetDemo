@@ -17,9 +17,11 @@ chrome.action.onClicked.addListener(async (tab) => {
     updateBadge(tab, nextState)
 
     if (nextState === 'ON') {
+      chrome.action.setIcon({ path: "../images/icon-128-yes.png" })
       hideSudoWarning(tab)
       enableDemoMode(tab)
     } else if (nextState === 'OFF') {
+      chrome.action.setIcon({ path: "../images/-128.png" })
       showSudoWarning(tab)
       disableDemoMode(tab)
     }

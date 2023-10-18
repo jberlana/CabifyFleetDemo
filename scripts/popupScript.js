@@ -1,17 +1,33 @@
 
+console.log('Script loaded')
+
 document.addEventListener('DOMContentLoaded', function () {
-    // Initialize switch based on stored value
-    chrome.storage.local.get(['demo'], function (result) {
-      document.getElementById('switch').checked = result.switchValue || false;
-    });
-  
-    // Attach listener to the switch
-    document.getElementById('switch').addEventListener('change', function () {
-      let value = this.checked;
-      localStorage.setItem('demo', value);
-      console.log('Value is set to ' + value);
-    });
+
+  const switchId = 'switch'
+  const demoSwitch = document.getElementById(switchId)
+
+  console.log('Init ' + JSON.stringify(chrome.storage.sync));
+
+  // Initialize switch based on stored value
+  chrome.storage.sync.get("demo").then((result) => {
+    console.log('Get ' + JSON.stringify(result));
+    demoSwitch.checked = result.demo;
   });
+
+  // Attach listener to the switch
+  demoSwitch.addEventListener('change', function () {
+    let value = this.checked;
+
+    // Save value to local storage
+    chrome.storage.sync.set({"demo": value}).then(() => {
+      console.log('Set ' + value);
+    });
+
+  });
+
+
+
+});
 
 // Hide the impersonated card on the sidebar.
 async function hideSudoWarning(tab) {
