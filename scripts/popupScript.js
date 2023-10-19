@@ -18,12 +18,19 @@ document.addEventListener("DOMContentLoaded", async function () {
   });
 
   const demoSwitch = document.getElementById("switch");
+  const headerImage = document.getElementById("popupImage");
 
   // Retreive status from extension stoarage and refresh the switch.
   chrome.storage.local.get("demo").then((result) => {
     console.log("2. GetR " + JSON.stringify(result.demo));
     demoSwitch.checked = result.demo;
-    setBadgeTextAndColor(result.demo ? "ON" : "", result.demo ? "#994742" : "");
+    if (result.demo) {
+      chrome.action.setIcon({ path: "../images/icon-16.png" });
+      headerImage.src = "../images/icon-80-yes.png";
+    } else {
+      chrome.action.setIcon({ path: "../images/icon-16-no.png" });
+      headerImage.src = "../images/icon-80-no.png";
+    }
   });
 
   // Attach listener to the switch
@@ -34,24 +41,16 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (newStatus) {
       activateDemoMode(tab[0]);
       hideSudoWarning(tab[0]);
-      setBadgeTextAndColor("ON", "#994742");
+      chrome.action.setIcon({ path: "../images/icon-16.png" });
+      headerImage.src = "../images/icon-80-yes.png";
     } else {
       deactivateDemoMode(tab[0]);
       showSudoWarning(tab[0]);
-      setBadgeTextAndColor("", "");
+      chrome.action.setIcon({ path: "../images/icon-16-no.png" });
+      headerImage.src = "../images/icon-80-no.png";
     }
   });
 });
-
-// Changes the text and the color of the extension badge.
-async function setBadgeTextAndColor(text, color) {
-  await chrome.action.setBadgeText({
-    text,
-  });
-  await chrome.action.setBadgeBackgroundColor({
-    color,
-  });
-}
 
 // Activate the property on the local storage to control anonimization.
 async function activateDemoMode(tab) {
