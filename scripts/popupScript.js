@@ -1,5 +1,3 @@
-console.log("Script loaded");
-
 document.addEventListener("DOMContentLoaded", async function () {
   const tab = await chrome.tabs.query({
     active: true,
@@ -14,6 +12,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     target: { tabId: tab[0].id },
     func: async () => {
       const currentStatus = localStorage.getItem("demo");
+      setBadgeText(currentStatus ? "ON" : "", currentStatus ? "" : "");
       await chrome.storage.local.set({
         demo: currentStatus === "true" ? true : false,
       });
@@ -21,25 +20,37 @@ document.addEventListener("DOMContentLoaded", async function () {
   });
 
   chrome.storage.local.get("demo").then((result) => {
-    console.log("Get " + JSON.stringify(result));
     demoSwitch.checked = result.demo;
   });
 
   // Attach listener to the switch
   demoSwitch.addEventListener("change", function () {
     let newStatus = this.checked;
-    console.log("WRITE " + newStatus);
 
+    // Prepare to anonimize the website data.
     if (newStatus) {
       activateDemoMode(tab[0]);
       hideSudoWarning(tab[0]);
+      setBadgeText("ON", "#994742");
     } else {
       deactivateDemoMode(tab[0]);
       showSudoWarning(tab[0]);
+      setBadgeText("", "");
     }
   });
 });
 
+// Changes the text and the color of the extension badge.
+async function setBadgeText(text, color) {
+  await chrome.action.setBadgeText({
+    text: text,
+  });
+  await chrome.action.setBadgeBackgroundColor({
+    color: color,
+  });
+}
+
+// Activate the property on the local storage to control anonimization.
 async function activateDemoMode(tab) {
   await chrome.scripting.executeScript({
     target: { tabId: tab.id },
@@ -50,6 +61,7 @@ async function activateDemoMode(tab) {
   });
 }
 
+// Deactivate the property on the local storage to control anonimization.
 async function deactivateDemoMode(tab) {
   await chrome.scripting.executeScript({
     target: { tabId: tab.id },
@@ -75,12 +87,5 @@ async function showSudoWarning(tab) {
   await chrome.scripting.removeCSS({
     files: ["focus-mode.css"],
     target: { tabId: tab.id },
-  });
-}
-
-async function updateBadge(tab, text) {
-  await chrome.action.setBadgeText({
-    tabId: tab.id,
-    text: text,
   });
 }
