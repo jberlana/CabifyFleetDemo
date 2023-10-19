@@ -18,6 +18,5 @@
       "128": "images/icon-128.png"
     }
   },
-  "permissions": ["scripting", "activeTab", "storage", "tabs"],
-  "host_permissions": ["http://localhost/*"]
+  "permissions": ["scripting", "activeTab", "storage"]
 }

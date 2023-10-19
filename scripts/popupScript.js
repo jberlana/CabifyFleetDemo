@@ -4,32 +4,26 @@ document.addEventListener("DOMContentLoaded", async function () {
     active: true,
     lastFocusedWindow: true,
   });
-  const switchId = "switch";
-  const demoSwitch = document.getElementById(switchId);
 
-  console.log("TAB " + JSON.stringify(tab));
-
+  // Get the previous value on th elocal storage and save it on the extension storage
   await chrome.scripting.executeScript({
     target: { tabId: tab[0].id },
     func: async () => {
       const currentStatus = localStorage.getItem("demo");
-      console.log("CURRENT STATUS", currentStatus);
+      console.log("1. GetL " + currentStatus);
       await chrome.storage.local.set({
-        demo: currentStatus === "true",
+        demo: currentStatus == "true",
       });
     },
   });
 
+  const demoSwitch = document.getElementById("switch");
+
+  // Retreive status from extension stoarage and refresh the switch.
   chrome.storage.local.get("demo").then((result) => {
-    console.log("IS CHECKED", result.demo);
+    console.log("2. GetR " + JSON.stringify(result.demo));
     demoSwitch.checked = result.demo;
-    if (demoSwitch.checked) {
-      setBadgeText("ON");
-      setBadgeColor("#994742");
-    } else {
-      setBadgeText(null);
-      setBadgeColor(null);
-    }
+    setBadgeText(result.demo ? "ON" : null, result.demo ? "#994742" : null);
   });
 
   // Attach listener to the switch
@@ -40,12 +34,11 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (newStatus) {
       activateDemoMode(tab[0]);
       hideSudoWarning(tab[0]);
-      setBadgeText("ON");
-      setBadgeColor("#994742");
+      setBadgeText("ON", "#994742");
     } else {
       deactivateDemoMode(tab[0]);
       showSudoWarning(tab[0]);
-      setBadgeText(null);
+      setBadgeText(null, null);
     }
   });
 });
@@ -55,9 +48,6 @@ async function setBadgeText(text) {
   await chrome.action.setBadgeText({
     text,
   });
-}
-
-async function setBadgeColor(color) {
   await chrome.action.setBadgeBackgroundColor({
     color,
   });
