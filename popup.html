@@ -1,15 +1,27 @@
 <html>
-    <head>
-        <link rel="stylesheet" type="text/css" href="css/switch.css">
-    </head>
+  <head>
+    <link rel="stylesheet" type="text/css" href="css/switch.css" />
+    <meta charset="UTF-8" />
+  </head>
 
   <body>
-    <h1>Demo mode</h1>
+    <img src="./images/icon-128-yes.png" id="popupImage" />
+    <h1 class="popupHeader">Recuerda</h1>
+    <p class="popupText">
+      En este modo se reemplazarán datos sensibles como nombre y matrícula, pero
+      cualquier acción que realices afectará la operativa real de la flota.
+    </p>
+    <p class="popupText">
+      Por seguridad, tu actividad quedará registrada con tu usuario de Cabify.
+    </p>
 
-    <label class="switch">
-        <input type="checkbox" id="switch">
+    <div class="popupSwitch">
+      <span class="popupSwitch_label">Modo anónimo</span>
+      <label class="switch">
+        <input type="checkbox" id="switch" />
         <span class="slider round"></span>
-    </label>
+      </label>
+    </div>
 
     <script src="scripts/popupScript.js"></script>
   </body>
