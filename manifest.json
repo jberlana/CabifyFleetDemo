@@ -9,9 +9,6 @@
     "48": "images/icon-48.png",
     "128": "images/icon-128.png"
   },
-  "background": {
-    "service_worker": "scripts/background.js"
-  },
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
@@ -21,5 +18,6 @@
       "128": "images/icon-128.png"
     }
   },
-  "permissions": ["scripting", "activeTab", "storage"]
+  "permissions": ["scripting", "activeTab", "storage", "tabs"],
+  "host_permissions": ["http://localhost/*"]
 }

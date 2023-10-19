@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", async function () {
+  debugger;
   const tab = await chrome.tabs.query({
     active: true,
     lastFocusedWindow: true,
@@ -12,15 +13,23 @@ document.addEventListener("DOMContentLoaded", async function () {
     target: { tabId: tab[0].id },
     func: async () => {
       const currentStatus = localStorage.getItem("demo");
-      setBadgeText(currentStatus ? "ON" : "", currentStatus ? "" : "");
+      console.log("CURRENT STATUS", currentStatus);
       await chrome.storage.local.set({
-        demo: currentStatus === "true" ? true : false,
+        demo: currentStatus === "true",
       });
     },
   });
 
   chrome.storage.local.get("demo").then((result) => {
+    console.log("IS CHECKED", result.demo);
     demoSwitch.checked = result.demo;
+    if (demoSwitch.checked) {
+      setBadgeText("ON");
+      setBadgeColor("#994742");
+    } else {
+      setBadgeText(null);
+      setBadgeColor(null);
+    }
   });
 
   // Attach listener to the switch
@@ -31,22 +40,26 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (newStatus) {
       activateDemoMode(tab[0]);
       hideSudoWarning(tab[0]);
-      setBadgeText("ON", "#994742");
+      setBadgeText("ON");
+      setBadgeColor("#994742");
     } else {
       deactivateDemoMode(tab[0]);
       showSudoWarning(tab[0]);
-      setBadgeText("", "");
+      setBadgeText(null);
     }
   });
 });
 
 // Changes the text and the color of the extension badge.
-async function setBadgeText(text, color) {
+async function setBadgeText(text) {
   await chrome.action.setBadgeText({
-    text: text,
+    text,
   });
+}
+
+async function setBadgeColor(color) {
   await chrome.action.setBadgeBackgroundColor({
-    color: color,
+    color,
   });
 }
 
