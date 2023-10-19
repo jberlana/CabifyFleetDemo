@@ -26,9 +26,9 @@ document.addEventListener("DOMContentLoaded", async function () {
   });
 
   // Attach listener to the switch
-  demoSwitch.addEventListener('change', function () {
+  demoSwitch.addEventListener("change", function () {
     let newStatus = this.checked;
-    console.log('WRITE ' + newStatus);
+    console.log("WRITE " + newStatus);
 
     if (newStatus) {
       activateDemoMode(tab[0]);
