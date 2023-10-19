@@ -44,13 +44,15 @@ document.addEventListener("DOMContentLoaded", async function () {
 });
 
 // Changes the text and the color of the extension badge.
-async function setBadgeText(text) {
+async function setBadgeText(text, color) {
   await chrome.action.setBadgeText({
     text,
   });
-  await chrome.action.setBadgeBackgroundColor({
-    color,
-  });
+  if (color !== null) {
+    await chrome.action.setBadgeBackgroundColor({
+      color,
+    });
+  }
 }
 
 // Activate the property on the local storage to control anonimization.
