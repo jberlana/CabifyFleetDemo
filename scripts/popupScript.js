@@ -4,39 +4,41 @@ document.addEventListener("DOMContentLoaded", async function () {
     active: true,
     lastFocusedWindow: true,
   });
-  const switchId = "switch";
-  const demoSwitch = document.getElementById(switchId);
-
-  console.log("TAB " + JSON.stringify(tab));
-
+  
+  // Get the previous value on th elocal storage and save it on the extension storage
   await chrome.scripting.executeScript({
     target: { tabId: tab[0].id },
     func: async () => {
       const currentStatus = localStorage.getItem("demo");
-      setBadgeText(currentStatus ? 'ON' : '', currentStatus ? '' : '')
+      console.log('1. GetL ' + currentStatus);
       await chrome.storage.local.set({
-        demo: currentStatus === "true" ? true : false,
+        "demo": currentStatus == "true"
       });
     },
   });
 
+  const demoSwitch = document.getElementById("switch");
+
+  // Retreive status from extension stoarage and refresh the switch.
   chrome.storage.local.get("demo").then((result) => {
+    console.log('2. GetR ' + JSON.stringify(result.demo));
     demoSwitch.checked = result.demo;
+    setBadgeText(result.demo ? "ON" : null, result.demo ? "#994742" : null)
   });
 
   // Attach listener to the switch
-  demoSwitch.addEventListener('change', function () {
+  demoSwitch.addEventListener("change", function () {
     let newStatus = this.checked;
 
     // Prepare to anonimize the website data.
     if (newStatus) {
       activateDemoMode(tab[0]);
       hideSudoWarning(tab[0]);
-      setBadgeText('ON', '#994742')
+      setBadgeText("ON", "#994742")
     } else {
       deactivateDemoMode(tab[0]);
       showSudoWarning(tab[0]);
-      setBadgeText('', '')
+      setBadgeText(null, null)
     }
   });
 });
@@ -57,7 +59,7 @@ async function activateDemoMode(tab) {
   await chrome.scripting.executeScript({
     target: { tabId: tab.id },
     func: () => {
-      localStorage.setItem('demo', true);
+      localStorage.setItem("demo", true);
       window.location.reload();
     },
   });
@@ -68,7 +70,7 @@ async function deactivateDemoMode(tab) {
   await chrome.scripting.executeScript({
     target: { tabId: tab.id },
     func: () => {
-      localStorage.setItem('demo', false);
+      localStorage.setItem("demo", false);
       window.location.reload();
     },
   });
@@ -78,7 +80,7 @@ async function deactivateDemoMode(tab) {
 async function hideSudoWarning(tab) {
   // Insert the CSS file when the user turns the extension on
   await chrome.scripting.insertCSS({
-    files: ['focus-mode.css'],
+    files: ["focus-mode.css"],
     target: { tabId: tab.id },
   });
 }
@@ -87,7 +89,7 @@ async function hideSudoWarning(tab) {
 async function showSudoWarning(tab) {
   // Remove the CSS file when the user turns the extension off
   await chrome.scripting.removeCSS({
-    files: ['focus-mode.css'],
+    files: ["focus-mode.css"],
     target: { tabId: tab.id },
   });
 }
