@@ -49,9 +49,11 @@ async function setBadgeText(text, color) {
   await chrome.action.setBadgeText({ 
     text: text 
   });
-  await chrome.action.setBadgeBackgroundColor({ 
-    color: color 
-  });
+  if (color != null) {
+    await chrome.action.setBadgeBackgroundColor({ 
+      color: color 
+    });
+  }
 }
 
 // Activate the property on the local storage to control anonimization.
