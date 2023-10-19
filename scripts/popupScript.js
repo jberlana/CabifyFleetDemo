@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   chrome.storage.local.get("demo").then((result) => {
     console.log("2. GetR " + JSON.stringify(result.demo));
     demoSwitch.checked = result.demo;
-    setBadgeText(result.demo ? "ON" : null, result.demo ? "#994742" : null);
+    setBadgeTextAndColor(result.demo ? "ON" : "", result.demo ? "#994742" : "");
   });
 
   // Attach listener to the switch
@@ -34,25 +34,23 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (newStatus) {
       activateDemoMode(tab[0]);
       hideSudoWarning(tab[0]);
-      setBadgeText("ON", "#994742");
+      setBadgeTextAndColor("ON", "#994742");
     } else {
       deactivateDemoMode(tab[0]);
       showSudoWarning(tab[0]);
-      setBadgeText(null, null);
+      setBadgeTextAndColor("", "");
     }
   });
 });
 
 // Changes the text and the color of the extension badge.
-async function setBadgeText(text, color) {
+async function setBadgeTextAndColor(text, color) {
   await chrome.action.setBadgeText({
     text,
   });
-  if (color !== null) {
-    await chrome.action.setBadgeBackgroundColor({
-      color,
-    });
-  }
+  await chrome.action.setBadgeBackgroundColor({
+    color,
+  });
 }
 
 // Activate the property on the local storage to control anonimization.
